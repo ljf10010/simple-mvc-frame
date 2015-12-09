@@ -1,2 +1,2 @@
 # simple-mvc-frame
-使用手册迟点会不上
+具体的使用方法，可以参考smartWeb的demo例子，很简单。很快就能上手。
