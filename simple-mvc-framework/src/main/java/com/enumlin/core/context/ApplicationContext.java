@@ -4,10 +4,7 @@
 
 package com.enumlin.core.context;
 
-import com.enumlin.core.helper.BeanHelper;
-import com.enumlin.core.helper.ClassHelper;
-import com.enumlin.core.helper.ControllerHelper;
-import com.enumlin.core.helper.IocHelper;
+import com.enumlin.core.helper.*;
 import com.enumlin.core.utils.ClassUtil;
 
 /*
@@ -23,6 +20,7 @@ public final class ApplicationContext {
         Class<?>[] classArray = {
                 ClassHelper.class,
                 BeanHelper.class,
+                AopHelper.class,
                 IocHelper.class,
                 ControllerHelper.class
         };

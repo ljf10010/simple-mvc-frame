@@ -8,6 +8,7 @@ import com.enumlin.core.annotation.Controller;
 import com.enumlin.core.annotation.Service;
 import com.enumlin.core.utils.ClassUtil;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -78,5 +79,37 @@ public class ClassHelper {
         beanClass.addAll(getControllerClassSet());
 
         return beanClass;
+    }
+
+    /**
+     * 获取应用包下某类(或接口)的所有之类(或实现类)
+     *
+     * @param superClass
+     * @return
+     */
+    public static Set<Class<?>> getClassSetBySuper(Class<?> superClass) {
+        Set<Class<?>> classSet = new HashSet<>();
+        for (Class<?> clz : CLASS_SET) {
+            if (superClass.isAssignableFrom(clz) && !superClass.equals(clz)) {
+                classSet.add(clz);
+            }
+        }
+        return classSet;
+    }
+
+    /**
+     * 获取应用包下带有某注解的所有类
+     *
+     * @param annotationClass
+     * @return
+     */
+    public static Set<Class<?>> getClassSetByAnnotation(Class<? extends Annotation> annotationClass) {
+        Set<Class<?>> classSet = new HashSet<>();
+        for (Class<?> clz : CLASS_SET) {
+            if (clz.isAnnotationPresent(annotationClass)) {
+                classSet.add(clz);
+            }
+        }
+        return classSet;
     }
 }
