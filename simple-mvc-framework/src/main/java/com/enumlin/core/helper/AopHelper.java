@@ -8,6 +8,8 @@ import com.enumlin.aop.annotation.Aspect;
 import com.enumlin.aop.proxy.AspectProxy;
 import com.enumlin.aop.proxy.Proxy;
 import com.enumlin.aop.proxy.ProxyManager;
+import com.enumlin.core.annotation.Service;
+import com.enumlin.transaction.TransactionProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ public class AopHelper {
                 List<Proxy> proxyList = entry.getValue();
                 Object proxy = ProxyManager.createProxy(targetClass, proxyList);
                 BeanHelper.setBean(targetClass, proxy);
-        }
+            }
         } catch (Exception e) {
             LOGGER.error("aop failure.", e);
         }
@@ -53,6 +55,13 @@ public class AopHelper {
 
     private static Map<Class<?>, Set<Class<?>>> createProxyMap() throws Exception {
         Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<>();
+
+        addAspectProxy(proxyMap);
+        addTransactiontProxy(proxyMap);
+        return proxyMap;
+    }
+
+    private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
 
         for (Class<?> proxyClass : proxyClassSet) {
@@ -62,8 +71,11 @@ public class AopHelper {
                 proxyMap.put(proxyClass, targetClassSet);
             }
         }
+    }
 
-        return proxyMap;
+    private static void addTransactiontProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
+        Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
+        proxyMap.put(TransactionProxy.class, serviceClassSet);
     }
 
     private static Map<Class<?>, List<Proxy>> createTargetMap(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {

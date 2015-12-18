@@ -146,7 +146,7 @@ public class DatabaseHelper {
             return false;
         }
 
-        String sql = "insert into " + getTableName(entityClass);
+        String sql = "insert into " + getTabelName(entityClass);
         StringBuilder colums = new StringBuilder(" (");
         StringBuilder values = new StringBuilder(" (");
 
@@ -178,7 +178,7 @@ public class DatabaseHelper {
             return false;
         }
 
-        String sql = "update " + getTableName(entityClass) + " set ";
+        String sql = "update " + getTabelName(entityClass) + " set ";
         StringBuilder colums = new StringBuilder();
         for (String fieldName : fieldMap.keySet()) {
             if (StringUtil.isEmpty(fieldName)) continue;
@@ -204,7 +204,7 @@ public class DatabaseHelper {
      * @return
      */
     public static <T> boolean deleteEntity(Class<T> entityClass, long id) {
-        String sql = "delelte from " + getTableName(entityClass) + " where id=?";
+        String sql = "delelte from " + getTabelName(entityClass) + " where id=?";
         return executeUpdate(sql, id) == 1;
     }
 
@@ -234,7 +234,57 @@ public class DatabaseHelper {
         }
     }
 
-    private static <T> String getTableName(Class<T> entityClass) {
+    /**
+     * 开启当前线程的事务
+     */
+    public static void beginTransaction() {
+        Connection connection = getConnection();
+        if (connection != null) {
+            try {
+                connection.setAutoCommit(false);
+            } catch (SQLException e) {
+                LOGGER.error("open transaction failure.", e);
+            } finally {
+                CONNECTION_HOLDER.set(connection);
+            }
+        }
+    }
+
+    /**
+     * 提交事务
+     */
+    public static void commitTransaction() {
+        Connection connection = getConnection();
+        if (connection != null) {
+            try {
+                connection.commit();
+                connection.close();
+            } catch (SQLException e) {
+                LOGGER.error("commit transaction failure.", e);
+            } finally {
+                CONNECTION_HOLDER.remove();
+            }
+        }
+    }
+
+    /**
+     * 回滚事务
+     */
+    public static void rollbackTransaction() {
+        Connection connection = getConnection();
+        if (connection != null) {
+            try {
+                connection.rollback();
+                connection.close();
+            } catch (SQLException e) {
+                LOGGER.error("rollback transaction failure.", e);
+            } finally {
+                CONNECTION_HOLDER.remove();
+            }
+        }
+    }
+
+    private static <T> String getTabelName(Class<T> entityClass) {
         return entityClass.getSimpleName();
     }
 }
