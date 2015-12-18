@@ -5,6 +5,7 @@
 package com.enumlin.core.model;
 
 import com.enumlin.core.utils.CastUtil;
+import com.enumlin.core.utils.CollectionUtil;
 
 import java.util.Map;
 
@@ -29,5 +30,9 @@ public class Param {
 
     public Map<String, Object> getMap() {
         return paramMap;
+    }
+
+    public boolean isEmpty() {
+        return CollectionUtil.isEmpty(paramMap);
     }
 }

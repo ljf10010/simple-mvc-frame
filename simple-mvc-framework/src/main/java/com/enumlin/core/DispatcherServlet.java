@@ -39,7 +39,7 @@ import java.util.Map;
  * @version  1.0
  * @since    2015-12-02
  */
-@WebServlet( urlPatterns = "/*", loadOnStartup = 0 )
+@WebServlet( urlPatterns = "/*", loadOnStartup = 0 ) // 拦截所有的请求
 public class DispatcherServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 
@@ -96,7 +96,13 @@ public class DispatcherServlet extends HttpServlet {
 
             Param param = new Param(paramMap);
             Method method = handler.getActionMethod();
-            Object result = ReflectionUtil.invokeMethod(controllerInstance, method, param);
+            Object result = null;
+            if (param.isEmpty()) {
+                result = ReflectionUtil.invokeMethod(controllerInstance, method);
+            } else {
+                result = ReflectionUtil.invokeMethod(controllerInstance, method, param);
+
+            }
 
             if (result instanceof View) {
                 View view = (View) result;
