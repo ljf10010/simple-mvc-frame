@@ -85,7 +85,7 @@ public class AopHelper {
             Set<Class<?>> targetClassSet = entry.getValue();
 
             for (Class<?> targetClass : targetClassSet) {
-                Proxy proxy = (Proxy) targetClass.newInstance();
+                Proxy proxy = (Proxy) proxyClass.newInstance();
                 if (targetMap.containsKey(targetClass)) {
                     targetMap.get(targetClass).add(proxy);
                 } else {

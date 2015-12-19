@@ -1,45 +1,51 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<%--
-  ~ Copyright (c) 2015. Enum.Lin all rights reserved.
-  --%>
-
 <c:set var="BASE" value="${pageContext.request.contextPath}"/>
-
 <html>
 <head>
     <title>创建客户</title>
-
-    <style>
-        tr td {
-            text-align: center;
-        }
-    </style>
+    <script src="${BASE}/asset/js/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="${BASE}/asset/js/jQuery/jquery-form-3.64.js"></script>
+    <script>
+        $(function () {
+            $("#customer_form").ajaxForm({
+                type: "post",
+                url: "${BASE}/customer_submit",
+                success: function (data) {
+                    if (data) {
+                        location.href = "${BASE}/customer"
+                    }
+                }
+            });
+        });
+    </script>
 </head>
 <body>
-    <h1>客户列表</h1>
-    <table>
-        <tr>
-            <th>客户名称</th>
-            <th>联系人</th>
-            <th>电话号码</th>
-            <th>邮箱地址</th>
-            <th>操作</th>
-        </tr>
+<h1>创建客户</h1>
 
-        <c:forEach var="customer" items="${customerList}">
+<div>
+    <form id="customer_form" enctype="multipart/form-data">
+        <table>
             <tr>
-                <td>${customer.name}</td>
-                <td>${customer.conpact}</td>
-                <td>${customer.telephone}</td>
-                <td>${customer.email}</td>
-                <td>
-                    <a href="${BASE}/customer_edit?id=${customer.id}">编辑</a>
-                    <a href="${BASE}/customer_delete?id=${customer.id}">删除</a>
-                </td>
+                <td>客户名字：</td>
+                <td><input type="text" name="name" value="${customer.name}"/></td>
             </tr>
-        </c:forEach>
-    </table>
+            <tr>
+                <td>联系人：</td>
+                <td><input type="text" name="contact" value="${customer.contact}"/></td>
+            </tr>
+            <tr>
+                <td>邮箱地址：</td>
+                <td><input type="text" name="email" value="${customer.email}"/></td>
+            </tr>
+            <tr>
+                <td>照片：</td>
+                <td><input type="file" name="photo" value="${customer.photo}"/></td>
+            </tr>
+        </table>
+        <button type="submit">保存</button>
+    </form>
+</div>
 </body>
 </html>

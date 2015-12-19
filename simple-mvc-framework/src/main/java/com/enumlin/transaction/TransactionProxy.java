@@ -45,6 +45,7 @@ public class TransactionProxy implements Proxy {
 
         Method method = proxyChain.getTargetMethod();
         if (!FLAG_HOLDER.get() && method.isAnnotationPresent(Transaction.class)) {
+            FLAG_HOLDER.set(true);
             try {
                 DatabaseHelper.beginTransaction();
                 result = proxyChain.doProxyChain();
