@@ -5,8 +5,8 @@
 package com.enumlin.core.helper;
 
 import com.enumlin.core.annotation.Action;
-import com.enumlin.core.model.Handler;
-import com.enumlin.core.model.Request;
+import com.enumlin.core.bean.Handler;
+import com.enumlin.core.bean.Request;
 import com.enumlin.core.utils.CollectionUtil;
 import org.apache.commons.lang3.ArrayUtils;
 

@@ -2,10 +2,9 @@
  * Copyright (c) 2015. Enum.Lin all rights reserved.
  */
 
-package com.enumlin.core.model;
+package com.enumlin.core.bean;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 
 /*
  * 封装 Action 信息

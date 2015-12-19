@@ -2,7 +2,7 @@
  * Copyright (c) 2015. Enum.Lin all rights reserved.
  */
 
-package com.enumlin.core.model;
+package com.enumlin.core.bean;
 
 import com.enumlin.core.utils.CastUtil;
 import com.enumlin.core.utils.CollectionUtil;

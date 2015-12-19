@@ -2,7 +2,7 @@
  * Copyright (c) 2015. Enum.Lin all rights reserved.
  */
 
-package com.enumlin.core.model;
+package com.enumlin.core.bean;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

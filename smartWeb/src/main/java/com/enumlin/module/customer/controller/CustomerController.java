@@ -7,9 +7,9 @@ package com.enumlin.module.customer.controller;
 import com.enumlin.core.annotation.Action;
 import com.enumlin.core.annotation.Controller;
 import com.enumlin.core.annotation.Inject;
-import com.enumlin.core.model.Data;
-import com.enumlin.core.model.Param;
-import com.enumlin.core.model.View;
+import com.enumlin.core.bean.Data;
+import com.enumlin.core.bean.Param;
+import com.enumlin.core.bean.View;
 import com.enumlin.module.customer.model.Customer;
 import com.enumlin.module.customer.service.CustomerService;
 
