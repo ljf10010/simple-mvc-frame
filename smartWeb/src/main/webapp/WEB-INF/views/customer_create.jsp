@@ -9,14 +9,16 @@
     <script src="${BASE}/asset/js/jQuery/jquery-form-3.64.js"></script>
     <script>
         $(function () {
-            $("#customer_form").ajaxForm({
-                type: "post",
-                url: "${BASE}/customer_submit",
-                success: function (data) {
-                    if (data) {
-                        location.href = "${BASE}/customer"
+            $("#saveForm").click(function () {
+                $("#customer_form").ajaxForm({
+                    type: "post",
+                    url: "${BASE}/customer_create",
+                    success: function (data) {
+                        if (data) {
+                            location.href = "${BASE}/customer"
+                        }
                     }
-                }
+                });
             });
         });
     </script>
@@ -44,7 +46,7 @@
                 <td><input type="file" name="photo" value="${customer.photo}"/></td>
             </tr>
         </table>
-        <button type="submit">保存</button>
+        <button id="saveForm" type="submit">保存</button>
     </form>
 </div>
 </body>

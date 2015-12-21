@@ -6,6 +6,9 @@ package com.enumlin.core.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /*
  * 字符串工具
  *
@@ -15,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
  * 
  */
 public class StringUtil {
+    public static final String SEPARATOR = String.valueOf((char) 29);
+
     public static boolean isEmpty(String str) {
         if (str != null) {
             str = str.trim();
@@ -28,7 +33,7 @@ public class StringUtil {
     }
 
 
-    public static String[] spliString(String body, String separatorChars) {
+    public static String[] splitString(String body, String separatorChars) {
         return StringUtils.split(body, separatorChars);
     }
 }

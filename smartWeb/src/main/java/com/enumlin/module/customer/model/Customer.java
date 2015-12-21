@@ -14,21 +14,21 @@ public class Customer {
     @ExcludeField
     private long id;
     private String name;
-    private String conpact;
+    private String contact;
     private String telephone;
     private String email;
     private String remark;
 
-    public String getConpact() {
-        return conpact;
-    }
-
-    public void setConpact(String conpact) {
-        this.conpact = conpact;
-    }
-
     public String getEmail() {
         return email;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public void setEmail(String email) {
@@ -70,7 +70,7 @@ public class Customer {
     @Override
     public String toString() {
         return "Customer{" +
-                "conpact='" + conpact + '\'' +
+                "contact='" + contact + '\'' +
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 ", telephone='" + telephone + '\'' +

@@ -7,10 +7,7 @@ package com.enumlin.core.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /*
  * 流操作控制器
@@ -37,5 +34,24 @@ public final class StreamUtil {
             throw new RuntimeException(e);
         }
         return sb.toString();
+    }
+
+    public static void copyStream(InputStream inputStream, OutputStream outputStream) {
+        int length = 0;
+        byte[] temp = new byte[1024 * 1024];
+        try {
+            while ((length = inputStream.read(temp)) != -1) {
+                outputStream.write(temp, 0, length);
+            }
+        } catch (IOException e) {
+            LOGGER.error("copy stream failure.", e);
+        } finally {
+            try {
+                inputStream.close();
+                outputStream.close();
+            } catch (IOException e) {
+                LOGGER.error("close stream failure.", e);
+            }
+        }
     }
 }

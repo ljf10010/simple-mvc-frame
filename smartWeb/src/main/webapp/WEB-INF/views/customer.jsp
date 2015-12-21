@@ -27,7 +27,7 @@
         <c:forEach var="customer" items="${customerList}">
             <tr>
                 <td>${customer.name}</td>
-                <td>${customer.conpact}</td>
+                <td>${customer.contact}</td>
                 <td>${customer.telephone}</td>
                 <td>${customer.email}</td>
                 <td>

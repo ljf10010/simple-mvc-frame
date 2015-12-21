@@ -4,16 +4,15 @@
 
 package com.enumlin.core;
 
-import com.enumlin.core.context.ApplicationContext;
-import com.enumlin.core.helper.BeanHelper;
-import com.enumlin.core.helper.ConfigHelper;
-import com.enumlin.core.helper.ControllerHelper;
 import com.enumlin.core.bean.Data;
 import com.enumlin.core.bean.Handler;
 import com.enumlin.core.bean.Param;
 import com.enumlin.core.bean.View;
-import com.enumlin.core.utils.*;
-import org.apache.commons.lang3.ArrayUtils;
+import com.enumlin.core.context.ApplicationContext;
+import com.enumlin.core.helper.*;
+import com.enumlin.core.utils.JsonUtil;
+import com.enumlin.core.utils.ReflectionUtil;
+import com.enumlin.core.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -58,6 +55,9 @@ public class DispatcherServlet extends HttpServlet {
         // 注册处理静态资源的默认 Servlet
         ServletRegistration defaultServlet = context.getServletRegistration("default");
         defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
+
+        // 初始化文件上传组件
+        UploadHelper.init(context);
     }
 
     @Override
@@ -65,38 +65,25 @@ public class DispatcherServlet extends HttpServlet {
         String requestMethod = req.getMethod().toLowerCase();
         String requestPath = req.getPathInfo();
 
+        // 忽略logo请求
+        if (requestPath.equals("/favicon.ico"))
+            return;
+
         Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
         if (handler != null) {
             Class<?> controllerClass = handler.getControllerClass();
             Object controllerInstance = BeanHelper.getBean(controllerClass);
 
-            Map<String, Object> paramMap = new HashMap<>();
-            Enumeration<String> parameterNames = req.getParameterNames();
-            while (parameterNames.hasMoreElements()) {
-                String paramName = parameterNames.nextElement();
-                String paramValue = req.getParameter(paramName);
-
-                paramMap.put(paramName, paramValue);
-            }
-
-            String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
-            if (StringUtil.isNotEmpty(body)) {
-                String[] params = StringUtil.spliString(body, "&");
-                if (ArrayUtils.isNotEmpty(params)) {
-                    for (String param : params) {
-                        String[] array = StringUtil.spliString(param, "=");
-                        if (ArrayUtils.isNotEmpty(array)) {
-                            String paramName = array[0];
-                            String paramValue = array[1];
-                            paramMap.put(paramName, paramValue);
-                        }
-                    }
-                }
-            }
-
-            Param param = new Param(paramMap);
-            Method method = handler.getActionMethod();
+            Param param = null;
             Object result = null;
+            Method method = handler.getActionMethod();
+
+            if (UploadHelper.isMultipart(req)) {
+                param = UploadHelper.createParam(req);
+            } else {
+                param = RequestHelper.createParam(req);
+            }
+
             if (param.isEmpty()) {
                 result = ReflectionUtil.invokeMethod(controllerInstance, method);
             } else {
@@ -105,32 +92,40 @@ public class DispatcherServlet extends HttpServlet {
             }
 
             if (result instanceof View) {
-                View view = (View) result;
-                String path = view.getPath();
-                if (StringUtil.isNotEmpty(path)) {
-                    if (path.startsWith("/")) {
-                        resp.sendRedirect(req.getContextPath() + path);
-                    } else {
-                        Map<String, Object> model = view.getModel();
-                        for (Map.Entry<String, Object> entry : model.entrySet()) {
-                            req.setAttribute(entry.getKey(), entry.getValue());
-                        }
-
-                        req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
-                    }
-                }
+                handleViewResult(req, resp, (View) result);
             } else if (result instanceof Data) {
-                Data data = (Data) result;
-                Object model = data.getModel();
-                if (model != null) {
-                    resp.setContentType("application/json");
-                    resp.setCharacterEncoding("UTF-8");
-                    PrintWriter print = resp.getWriter();
-                    print.write(JsonUtil.Object2String(model));
+                handleDataResult(resp, (Data) result);
+            }
+        }
+    }
 
-                    print.flush();
-                    print.close();
+    private void handleDataResult(HttpServletResponse resp, Data result) throws IOException {
+        Data data = result;
+        Object model = data.getModel();
+        if (model != null) {
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            PrintWriter print = resp.getWriter();
+            print.write(JsonUtil.Object2String(model));
+
+            print.flush();
+            print.close();
+        }
+    }
+
+    private void handleViewResult(HttpServletRequest req, HttpServletResponse resp, View result) throws IOException, ServletException {
+        View view = result;
+        String path = view.getPath();
+        if (StringUtil.isNotEmpty(path)) {
+            if (path.startsWith("/")) {
+                resp.sendRedirect(req.getContextPath() + path);
+            } else {
+                Map<String, Object> model = view.getModel();
+                for (Map.Entry<String, Object> entry : model.entrySet()) {
+                    req.setAttribute(entry.getKey(), entry.getValue());
                 }
+
+                req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
             }
         }
     }

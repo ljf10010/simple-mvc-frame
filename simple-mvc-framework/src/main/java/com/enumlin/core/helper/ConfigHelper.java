@@ -4,6 +4,8 @@
 
 package com.enumlin.core.helper;
 
+import com.enumlin.core.utils.ProPertiesUtil;
+
 import java.util.Properties;
 
 import static com.enumlin.core.utils.ConfigConstant.*;
@@ -47,5 +49,9 @@ public final class ConfigHelper {
 
     public static String getAppAssetPath() {
         return getString(CONFIG_PROPS, APP_ASSET_PATH, "/asset/");
+    }
+
+    public static int getAppUploadLimit() {
+        return ProPertiesUtil.getInt(CONFIG_PROPS, APP_UPLOAD_LIMIT, 10);
     }
 }

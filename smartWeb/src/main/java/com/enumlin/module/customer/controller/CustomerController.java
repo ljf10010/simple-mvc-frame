@@ -8,6 +8,7 @@ import com.enumlin.core.annotation.Action;
 import com.enumlin.core.annotation.Controller;
 import com.enumlin.core.annotation.Inject;
 import com.enumlin.core.bean.Data;
+import com.enumlin.core.bean.FileParam;
 import com.enumlin.core.bean.Param;
 import com.enumlin.core.bean.View;
 import com.enumlin.module.customer.model.Customer;
@@ -73,8 +74,9 @@ public class CustomerController {
      */
     @Action( "post:/customer_create" )
     public Data createSubmit(Param param) {
-        Map<String, Object> map = param.getMap();
-        boolean result = customerService.createCustomer(map);
+        Map<String, Object> map = param.getFieldMap();
+        FileParam fileParam = param.getFile("photo");
+        boolean result = customerService.createCustomer(map, fileParam);
         return new Data(result);
     }
 
@@ -100,7 +102,7 @@ public class CustomerController {
     @Action( "post:/customer_edit" )
     public Data editSubmit(Param param) {
         long id = param.getLong("id");
-        Map<String, Object> map = param.getMap();
+        Map<String, Object> map = param.getFieldMap();
         map.remove("id");
         boolean result = customerService.updateCustomer(map, id);
         return new Data(result);

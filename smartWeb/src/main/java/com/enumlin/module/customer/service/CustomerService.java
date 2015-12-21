@@ -5,9 +5,12 @@
 package com.enumlin.module.customer.service;
 
 import com.enumlin.core.annotation.Service;
+import com.enumlin.core.bean.FileParam;
 import com.enumlin.core.helper.DatabaseHelper;
 import com.enumlin.core.helper.EntityHelper;
+import com.enumlin.core.helper.UploadHelper;
 import com.enumlin.module.customer.model.Customer;
+import com.enumlin.transaction.annotation.Transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -49,8 +52,11 @@ public class CustomerService {
      * @param customer
      * @return
      */
-    public boolean createCustomer(Map<String, Object> customer) {
-        return DatabaseHelper.insertEntity(customer.getClass(), customer);
+    public boolean createCustomer(Map<String, Object> customer, FileParam fileParam) {
+        boolean result = DatabaseHelper.insertEntity(Customer.class, customer);
+        if (result)
+            UploadHelper.uploadFile("/tmp/upload/", fileParam);
+        return result;
     }
 
     /**
@@ -59,9 +65,11 @@ public class CustomerService {
      * @param customer
      * @return
      */
+    @Transaction
     public boolean createCustomer(Customer customer) {
         Map<String, Object> fieldMap = EntityHelper.entity2Map(customer);
         return DatabaseHelper.insertEntity(Customer.class, fieldMap);
+
     }
 
     /**

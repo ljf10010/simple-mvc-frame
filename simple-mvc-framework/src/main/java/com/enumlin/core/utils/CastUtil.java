@@ -20,4 +20,24 @@ public class CastUtil {
         }
         return value;
     }
+
+    public static String castString(Object o) {
+        return String.valueOf(o);
+    }
+
+    /**
+     * @param o
+     * @return
+     */
+    public static double castDouble(Object o) {
+        return Double.valueOf(o.toString());
+    }
+
+    public static int castInt(Object o) {
+        return Integer.valueOf(o.toString());
+    }
+
+    public static boolean castBoolean(Object o) {
+        return Boolean.valueOf(o.toString());
+    }
 }
