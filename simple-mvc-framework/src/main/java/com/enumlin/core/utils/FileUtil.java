@@ -45,6 +45,9 @@ public final class FileUtil {
         if (!parentFile.exists()) {
             try {
                 FileUtils.forceMkdir(file);
+                file.setWritable(true);
+                file.setReadable(true);
+                file.setExecutable(true);
             } catch (IOException e) {
                 LOGGER.error("create file failure.", e);
             }

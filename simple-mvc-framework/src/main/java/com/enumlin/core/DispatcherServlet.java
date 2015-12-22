@@ -43,7 +43,7 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         ApplicationContext.init();
-        LOGGER.info("context is initailized.");
+        LOGGER.info("context is init...");
 
         // 获取 ServletContext 对象 (用于注册 Servlet)
         ServletContext context = servletConfig.getServletContext();
@@ -62,40 +62,47 @@ public class DispatcherServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String requestMethod = req.getMethod().toLowerCase();
-        String requestPath = req.getPathInfo();
+        try {
+            // 初始化Servlet 辅助类封装 request 和 response, 让controller 或 service 可以灵活的获取里面的值
+            ServletHelper.init(req, resp);
 
-        // 忽略logo请求
-        if (requestPath.equals("/favicon.ico"))
-            return;
+            String requestMethod = req.getMethod().toLowerCase();
+            String requestPath = req.getPathInfo();
 
-        Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
-        if (handler != null) {
-            Class<?> controllerClass = handler.getControllerClass();
-            Object controllerInstance = BeanHelper.getBean(controllerClass);
+            // 忽略logo请求
+            if (requestPath.equals("/favicon.ico"))
+                return;
 
-            Param param = null;
-            Object result = null;
-            Method method = handler.getActionMethod();
+            Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+            if (handler != null) {
+                Class<?> controllerClass = handler.getControllerClass();
+                Object controllerInstance = BeanHelper.getBean(controllerClass);
 
-            if (UploadHelper.isMultipart(req)) {
-                param = UploadHelper.createParam(req);
-            } else {
-                param = RequestHelper.createParam(req);
+                Param param = null;
+                Object result = null;
+                Method method = handler.getActionMethod();
+
+                if (UploadHelper.isMultipart(req)) {
+                    param = UploadHelper.createParam(req);
+                } else {
+                    param = RequestHelper.createParam(req);
+                }
+
+                if (param.isEmpty()) {
+                    result = ReflectionUtil.invokeMethod(controllerInstance, method);
+                } else {
+                    result = ReflectionUtil.invokeMethod(controllerInstance, method, param);
+
+                }
+
+                if (result instanceof View) {
+                    handleViewResult(req, resp, (View) result);
+                } else if (result instanceof Data) {
+                    handleDataResult(resp, (Data) result);
+                }
             }
-
-            if (param.isEmpty()) {
-                result = ReflectionUtil.invokeMethod(controllerInstance, method);
-            } else {
-                result = ReflectionUtil.invokeMethod(controllerInstance, method, param);
-
-            }
-
-            if (result instanceof View) {
-                handleViewResult(req, resp, (View) result);
-            } else if (result instanceof Data) {
-                handleDataResult(resp, (Data) result);
-            }
+        } finally {
+            ServletHelper.destroy();
         }
     }
 
